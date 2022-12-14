@@ -193,6 +193,7 @@ Genotypes are changed accordingly.
 - `citeseq` Required, matched_dir.
 - `flv_CR` Required, matched_dir.
 - `flv_trust4` Required, matched_dir.
+- `sweetseq` Required, matched_dir.
  
 5th column:
 - `dynaseq` Required, background snp file.
@@ -250,7 +251,7 @@ use `--steps_run barcode,cutadapt`.
 
 `--noLinker` Outputs R1 reads without correct linker.
 
-`--allowNoPolyT` Allow valid reads without polyT.
+`--filterNoPolyT` Filter reads without PolyT.
 
 `--allowNoLinker` Allow valid reads without correct linker.
 
@@ -300,15 +301,15 @@ is higher than or equal to this value.
 
 `--featureCounts_param` Additional parameters for the called software. Need to be enclosed in quotation marks. For example, `--{software}_param "--param1 value1 --param2 value2"`.
 
-`--gene_list` Required. Gene list file, one gene symbol per line. Only results of these genes are reported. Conflict with `--panel`.
-
 `--genomeDir` Required. Genome directory after running `celescope {assay} mkref`.
-
-`--panel` The prefix of bed file in `celescope/data/snp/panel/`, such as `lung_1`. Conflict with `--gene_list`.
 
 `--threshold_method` One of [otsu, auto, hard, none].
 
 `--hard_threshold` int, use together with `--threshold_method hard`.
 
 `--annovar_config` ANNOVAR config file.
+
+`--gene_list` Required. Gene list file, one gene symbol per line. Only results of these genes are reported. Conflict with `--panel`.
+
+`--panel` The prefix of bed file in `celescope/data/snp/panel/`, such as `lung_1`. Conflict with `--gene_list`.
 

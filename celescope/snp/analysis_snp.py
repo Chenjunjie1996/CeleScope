@@ -7,8 +7,10 @@ from venn import generate_petal_labels, draw_venn, generate_colors
 from celescope.tools import utils
 from celescope.tools.step import Step
 from celescope.tools.step import s_common
+from celescope.tools.target_metrics import get_gene_list
 from celescope.__init__ import HELP_DICT, ROOT_PATH
-
+from celescope.snp.__init__ import PANEL
+    
 
 def parse_annovar(annovar_file, n_entry=None):
     """
@@ -28,11 +30,13 @@ def parse_annovar(annovar_file, n_entry=None):
             if func == 'exonic':
                 changes = attrs[9]
                 cosmic = attrs[10]
+                split_char = ','
             else:
                 changes = attrs[7]
                 cosmic = attrs[8]
+                split_char = ';'
             change_list = list()
-            for change in changes.split(','):
+            for change in changes.split(split_char):
                 change_attrs = change.split(':')
                 mRNA = ''
                 protein = ''
@@ -106,6 +110,7 @@ class Analysis_snp(Step):
         # parse
         self.annovar_section = self.read_annovar_config()
         buildver = self.annovar_section['buildver']
+        self.gene_list, self.n_gene = get_gene_list(args)
 
         # data
         self.variant_table = None
@@ -182,6 +187,7 @@ class Analysis_snp(Step):
 
         cols = ['Chrom', 'Pos', 'Alleles', 'Gene', '0/0', "0/1", '1/1', 'mRNA', 'Protein', 'COSMIC']
         df_vcf = df_vcf[cols]
+        df_vcf = df_vcf[df_vcf.Gene.isin(self.gene_list)]
         self.variant_table = df_vcf
         self.variant_table.to_csv(self.variant_table_file, index=False)
 
@@ -287,6 +293,8 @@ def analysis_snp(args):
 
 def get_opts_analysis_snp(parser, sub_program):
     parser.add_argument('--annovar_config', help='ANNOVAR config file.', required=True)
+    parser.add_argument("--gene_list", help=HELP_DICT['gene_list'])
+    parser.add_argument("--panel", help=HELP_DICT['panel'], choices=list(PANEL))
     if sub_program:
         s_common(parser)
         parser.add_argument('--match_dir', help=HELP_DICT['match_dir'], required=True)

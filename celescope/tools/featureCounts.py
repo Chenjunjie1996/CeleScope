@@ -83,10 +83,10 @@ class FeatureCounts(Step):
             outdir = f'{self.outdir}/tmp/{gtf_type}'
             pathlib.Path(outdir).mkdir(parents=True,exist_ok=True)
             #out files
-            name_sorted_bam = f'{outdir}/{self.out_prefix.split("/")[-1]}_name_sorted.bam'
+            name_sorted_bam = f'{outdir}/{self.sample}_name_sorted.bam'
             input_basename = os.path.basename(self.args.input)
             featureCounts_bam = f'{outdir}/{input_basename}.featureCounts.bam'
-            log_file = f'{outdir}/{self.out_prefix.split("/")[-1]}.summary'
+            log_file = f'{outdir}/{self.sample}.summary'
 
             self.run_featureCounts(outdir,gtf_type)
             if gtf_type == self.args.gtf_type:
@@ -104,6 +104,8 @@ class FeatureCounts(Step):
                     by='name',
                 )
             self.feature_log_dict[gtf_type] = FeatureCounts.read_log(log_file)
+        self.add_metrics()
+        self.clean_tmp()
 
 
     @utils.add_log
@@ -123,7 +125,7 @@ class FeatureCounts(Step):
         self.add_metric(
             name='Feature Type',
             value=self.args.gtf_type.capitalize(),
-            help_info='Specified by `--gtf_type`. For snRNA-seq, you need to add `--gtf_type gene` to include reads mapped to intronic regions.'
+            help_info='Specified by `--gtf_type`. For snRNA-seq, you need to add `--gtf_type gene` to include reads mapped to intronic regions. Staring from CeleScope v1.12.0, the default value of gtf_type is changed from `exon` to `gene`.'
         )
         self.add_metric(
             name='Reads Assigned To Exonic Regions',
@@ -165,15 +167,13 @@ class FeatureCounts(Step):
 def featureCounts(args):
     with FeatureCounts(args) as runner:
         runner.run()
-        runner.add_metrics()
-        runner.clean_tmp()
 
 
 def get_opts_featureCounts(parser, sub_program):
     parser.add_argument(
         '--gtf_type',
         help='Specify feature type in GTF annotation',
-        default='exon',
+        default='gene',
         choices=['exon', 'gene'],
     )
     parser.add_argument('--genomeDir', help=HELP_DICT['genomeDir'])

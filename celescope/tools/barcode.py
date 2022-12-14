@@ -190,7 +190,7 @@ class Barcode(Step):
         self.whitelist = args.whitelist
         self.lowNum = args.lowNum
         self.lowQual = args.lowQual
-        self.allowNoPolyT = args.allowNoPolyT
+        self.filterNoPolyT = args.filterNoPolyT
         self.allowNoLinker = args.allowNoLinker
         self.nopolyT = args.nopolyT  # true == output nopolyT reads
         self.noLinker = args.noLinker
@@ -231,9 +231,44 @@ class Barcode(Step):
         self.open_files()
 
     @staticmethod
-    def get_seq_str(seq, sub_pattern_dict):
+    def get_seq_str_no_exception(seq, sub_pattern_dict):
         """get subseq with intervals in arr and concatenate"""
         return ''.join([seq[item[0]: item[1]] for item in sub_pattern_dict])
+
+    @staticmethod
+    def get_seq_str(seq, sub_pattern_dict):
+        """
+        Get subseq with intervals in arr and concatenate
+
+        Args:
+            seq: str
+            sub_pattern_dict: [[0, 8], [24, 32], [48, 56]]
+
+        Returns:
+            str
+
+        Raise:
+            IndexError: if sequence length is not enough
+
+        >>> sub_pattern_dict = [[0, 8]]
+        >>> seq = "A" * 7
+        >>> Barcode.get_seq_str(seq, sub_pattern_dict)
+        Traceback (most recent call last):
+        ...
+        IndexError: sequence length is not enough in R1 read: AAAAAAA
+        >>> seq = "A" * 8
+        >>> Barcode.get_seq_str(seq, sub_pattern_dict)
+        'AAAAAAAA'
+        """
+        seq_len = len(seq)
+        ans = []
+        for item in sub_pattern_dict:
+            start, end = item[0], item[1]
+            if end > seq_len:
+                raise IndexError(f"sequence length is not enough in R1 read: {seq}")
+            else:
+                ans.append(seq[start:end])
+        return ''.join(ans)
 
     @staticmethod
     def get_seq_list(seq, pattern_dict, abbr):
@@ -608,7 +643,7 @@ class Barcode(Step):
                     self.total_num += 1
 
                     # polyT filter
-                    if bool_T and (not self.allowNoPolyT):
+                    if bool_T and self.filterNoPolyT:
                         if not Barcode.check_polyT(seq1, pattern_dict):
                             self.no_polyT_num += 1
                             if self.nopolyT:
@@ -742,8 +777,8 @@ lowQual will be regarded as low-quality bases.',
         action='store_true',
     )
     parser.add_argument(
-        '--allowNoPolyT',
-        help="Allow valid reads without polyT.",
+        '--filterNoPolyT',
+        help="Filter reads without PolyT.",
         action='store_true'
     )
     parser.add_argument(

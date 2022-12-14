@@ -20,8 +20,6 @@ CeleScope contains interfaces `multi_{assay}` to generate pipeline scripts for a
 
 Run `multi_{assay} -h` for help.
 
-Note: `multi_rna` works for both single-cell RNA-Seq(scRNA-seq) and single-nucleus RNA-seq(snRNA-seq). The default settings are fine for scRNA-seq, but for snRNA-seq, you need to add `--gtf_type gene` to include reads mapped to intronic regions.
-
 ## Usage Example
 
 Take single-cell rna as an example:
@@ -41,10 +39,11 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 gunzip Homo_sapiens.GRCh38.99.gtf.gz
 
 conda activate celescope
+celescope utils mkgtf Homo_sapiens.GRCh38.99.gtf Homo_sapiens.GRCh38.99.filtered.gtf
 celescope rna mkref \
- --genome_name Homo_sapiens_ensembl_99 \
+ --genome_name Homo_sapiens_ensembl_99_filtered \
  --fasta Homo_sapiens.GRCh38.dna.primary_assembly.fa \
- --gtf Homo_sapiens.GRCh38.99.gtf
+ --gtf Homo_sapiens.GRCh38.99.filtered.gtf
 ```
 
 ### Mus musculus
@@ -60,10 +59,12 @@ gunzip Mus_musculus.GRCm38.dna.primary_assembly.fa.gz
 gunzip Mus_musculus.GRCm38.99.gtf.gz
 
 conda activate celescope
+celescope utils mkgtf Mus_musculus.GRCm38.99.gtf Mus_musculus.GRCm38.99.filtered.gtf
+
 celescope rna mkref \
- --genome_name Mus_musculus_ensembl_99 \
+ --genome_name Mus_musculus_ensembl_99_filtered \
  --fasta Mus_musculus.GRCm38.dna.primary_assembly.fa \
- --gtf Mus_musculus.GRCm38.99.gtf
+ --gtf Mus_musculus.GRCm38.99.filtered.gtf
 ```
 
 2. Generate scripts for each sample
@@ -76,7 +77,6 @@ multi_rna\
 	--mapfile ./rna.mapfile\
 	--genomeDir /SGRNJ/Public/Database/genome/homo_mus\
 	--thread 8\
-	--allowNoPolyT\
 	--mod shell
 ```
 `--mapfile` Required. Check [multi_rna.md](./rna/multi_rna.md) for how to write the mapfile.

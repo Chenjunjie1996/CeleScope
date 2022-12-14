@@ -1,3 +1,40 @@
+## [1.14.0b0] - 2022-12-01
+ ### `vdj`
+ - Replace Mixcr with IgBlast.
+
+ ### `snp`
+ - When using `otsu` or `auto` , two additional filtering conditions are added: Minimum variant allele frequency and Minimum supporting reads . This will remove some low-confidence heterozygous variants that cannot be filtered out by the `otsu` or `auto` algorithm.
+ - Some Splits reads (e.g. spanning splicing events in RNAseq data) will result in a small number of variants that are not in the target gene list. These variants are removed.
+
+## [1.13.0] - 2022-10-28
+
+ ### `sweetseq`
+ - Added support for single cell data generated with ProMoSCOPE<sup>TM</sup> Single Cell Glycosylation Detection Kits.
+
+ ### `capture_virus`
+ - The `capture_virus` pipeline now supports adding gtf as an input file to generate an expression matrix of viral genes.
+
+ ### `rna`
+ - If two or more groups of reads have the same barcode and UMI, but different gene annotations, the gene annotation with the most supporting reads is kept for UMI counting and the other read groups are discarded. In case of a tie for maximal read support, all read groups are discarded. In previous versions, both read groups were preserved.
+ 
+ ### General improvments
+ - There are some gtf missing lines with annotation as gene. Such gtf will report an error when running featureCounts. The `celescope utils mkgtf` command can now add missing lines for such gtf.
+
+## [1.12.1] - 2022-09-16
+ ### General improvments
+ - Fixed version of package `matplotlib`. The latest version of matplotlib 3.6.0 causes the error: `ModuleNotFoundError: No module named 'matplotlib._contour'`.
+
+## [1.12.0] - 2022-09-08
+ ### `rna`
+ - Introns will be included in the `rna` analysis by default.
+
+ ### `vdj`
+ - Add an argument `--mixcr_mem` to avoid the `Invalid maximum heap size` error reported by mixcr. https://github.com/milaboratory/mixcr/issues/588
+
+ ### General improvments
+ - `Reads without poly T` are not filtered by default. Remove the argument `--allowNoPolyT` and add a new argument `--filterNoPolyT`.
+ - Add a sub-command `celescope utils mkgtf` which is similar to `cellranger mkgtf`. After using this command, only the lines with gene_biotype as protein_coding, lncRNA, antisense and VDJ related genes will be kept in gtf. This removes 2 mitochondrial ribosomal RNAs (mt-rRNA) and 22 mitochondrial transfer RNAs (mt-tRNA) from gtf. The detected mitochondrial gene UMI is decreased.
+
 ## [1.11.1] - 2022-08-10
  ### General improvments
  - When making a STAR index, `--genomeSAindexNbases` can be automatically inferred based on genome size.

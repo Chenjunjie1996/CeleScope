@@ -4,12 +4,9 @@
     --mapfile ./rna.mapfile\
     --genomeDir /SGRNJ/Public/Database/genome/homo_mus\
     --thread 8\
-    --allowNoPolyT\
     --mod shell
 ```
-
-If Single nuclei RNA-Seq is used, you need to add `--gtf_type gene` to include reads mapped to 
-intronic regions.
+Work for both single cell RNA-Seq and single nuclei RNA-Seq.
 ## Features
 ### mkref
 - Create a genome reference directory.
@@ -157,6 +154,7 @@ it means that the given marker is not enough to identify the cluster.
 - `citeseq` Required, matched_dir.
 - `flv_CR` Required, matched_dir.
 - `flv_trust4` Required, matched_dir.
+- `sweetseq` Required, matched_dir.
  
 5th column:
 - `dynaseq` Required, background snp file.
@@ -214,7 +212,7 @@ use `--steps_run barcode,cutadapt`.
 
 `--noLinker` Outputs R1 reads without correct linker.
 
-`--allowNoPolyT` Allow valid reads without polyT.
+`--filterNoPolyT` Filter reads without PolyT.
 
 `--allowNoLinker` Allow valid reads without correct linker.
 

@@ -7,7 +7,6 @@ multi_capture_virus \
 --mapfile {mapfile} \
 --virus_genomeDir {virus_genomeDir} \
 --not_consensus \
---allowNoPolyT \
 --thread 4 \
 --mod shell
 ```
@@ -111,6 +110,7 @@ the read name is `{barcode}_{UMI}_{read ID}`.
 - `citeseq` Required, matched_dir.
 - `flv_CR` Required, matched_dir.
 - `flv_trust4` Required, matched_dir.
+- `sweetseq` Required, matched_dir.
  
 5th column:
 - `dynaseq` Required, background snp file.
@@ -168,7 +168,7 @@ use `--steps_run barcode,cutadapt`.
 
 `--noLinker` Outputs R1 reads without correct linker.
 
-`--allowNoPolyT` Allow valid reads without polyT.
+`--filterNoPolyT` Filter reads without PolyT.
 
 `--allowNoLinker` Allow valid reads without correct linker.
 
@@ -230,7 +230,9 @@ is higher than or equal to this value.
 
 `--umi_hard_threshold` int, use together with `--umi_threshold_method hard`.
 
-`--auto_coef` int, threshold = top 1% positive cell count / auto_coef.
+`--auto_coef` int, threshold = top 1 percent positive cell count / auto_coef.
 
 `--otsu_log_base` raw counts are first log transformed before thresholding. This argument is the log base. Commonly used values are 2 and 10.
+
+`--gtf` Optional. Genome gtf file. Use absolute path or relative path to `genomeDir`.
 

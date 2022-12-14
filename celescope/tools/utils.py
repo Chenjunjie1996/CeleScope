@@ -133,7 +133,10 @@ class Gtf_dict(dict):
                 tabs = line.split('\t')
                 gtf_type, attributes = tabs[2], tabs[-1]
                 if gtf_type == 'gene':
-                    gene_id = gene_id_pattern.findall(attributes)[-1]
+                    try:
+                        gene_id = gene_id_pattern.findall(attributes)[-1]
+                    except IndexError:
+                        print(line)
                     gene_names = gene_name_pattern.findall(attributes)
                     if not gene_names:
                         gene_name = gene_id
@@ -371,6 +374,10 @@ def fastq_line(name, seq, qual):
     return f'@{name}\n{seq}\n+\n{qual}\n'
 
 
+def fasta_line(name, seq):
+    return f'>{name}\n{seq}\n'
+
+
 def find_assay_init(assay):
     init_module = importlib.import_module(f"celescope.{assay}.__init__")
     return init_module
@@ -414,13 +421,15 @@ def find_step_module_with_folder(assay, step):
     return step_module, folder
 
 
-def sort_bam(input_bam, output_bam, threads=1):
+def sort_bam(input_bam, output_bam, threads=1, by='coord'):
     cmd = (
         f'samtools sort {input_bam} '
         f'-o {output_bam} '
         f'--threads {threads} '
         '2>&1 '
     )
+    if by == "name":
+        cmd += " -n"
     subprocess.check_call(cmd, shell=True)
 
 
