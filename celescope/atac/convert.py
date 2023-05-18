@@ -7,6 +7,7 @@ import subprocess
 import pysam
 import random
 import os
+import operator
 
 
 # Const
@@ -45,7 +46,6 @@ class Convert(Step):
 
         self.whitelist_10X_fh = xopen(self.whitelist_10X_file, 'r')
         self.sgr_tenX = {}
-        self.count_dict = defaultdict(int)
 
         # self.whitelist_10X_fh = iter(utils.read_one_col(self.whitelist_10X_file))
 
@@ -55,12 +55,25 @@ class Convert(Step):
         self.barcode_convert_json = f'{self.outdir}/barcode_convert.json'
     
     @utils.add_log
-    def count_sgr_barcode(self):
+    def gen_sgr_tenX_dict(self):
+        
+        count_dict = defaultdict(int)
+
         with pysam.FastxFile(self.args.fq2) as fq2_fh:
             for entry in fq2_fh:
                 sgr_barcode = entry.name.split('_')[0]
-                self.count_dict[sgr_barcode] += 1
-    
+                count_dict[sgr_barcode] += 1
+
+        count_dict = dict(sorted(count_dict.items(), key=operator.itemgetter(1), reverse=True))
+
+        for sgr_barcode in count_dict:
+            self.sgr_tenX[sgr_barcode] = self.whitelist_10X_fh.readline().strip()
+
+        # Add invalid barcode
+        for sgr_barcode, barcode_10X in self.sgr_tenX.items():
+            if barcode_10X == '':
+                self.sgr_tenX[sgr_barcode] = "AAAA" + ''.join(random.choice("ATCG") for _ in range(12))
+
     @utils.add_log
     def gzip_fq1(self):
         cmd = f'gzip -c {self.args.fq1} > {self.out_fq1_file}'
@@ -69,41 +82,16 @@ class Convert(Step):
     @utils.add_log
     def write_fq2(self):
         out_fq2 = xopen(self.out_fq2_file, 'w')
-
-        sgr_barcode_count = len(self.count_dict)
-        tenX_barcode_count = 0
-        for _ in xopen(self.whitelist_10X_file, 'r'):
-            tenX_barcode_count += 1
-        
-        diff = sgr_barcode_count - tenX_barcode_count
-
-        if diff > 0:
-            more_barcodes = set()
-            for _ in range(int(diff * 1.1)):
-                more_barcodes.add("AAAA" + ''.join(random.choice('ATCG') for _ in range(12)))
-
-            more_barcodes = list(more_barcodes)
         
         with pysam.FastxFile(self.args.fq2) as fq2_fh:
             for entry in fq2_fh:
                 name = entry.name
                 sgr_barcode = entry.sequence
-
-                if sgr_barcode in self.sgr_tenX:
-                    barcode_10X = self.sgr_tenX[sgr_barcode]
-                
-                else:
-                    if diff > 0 and self.count_dict[sgr_barcode] == 1:
-                        diff -= 1
-                        barcode_10X = more_barcodes[diff]
-                    else:
-                        barcode_10X = self.whitelist_10X_fh.readline().strip()
-                    self.sgr_tenX[sgr_barcode] = barcode_10X
-
+                barcode_10X = self.sgr_tenX[sgr_barcode]
                 new_qual = 'F' * len(barcode_10X)
                 out_fq2.write(f'@{name}\n{barcode_10X}\n+\n{new_qual}\n')
 
-            out_fq2.close()
+        out_fq2.close()
     
     @utils.add_log
     def gzip_fq3(self):
@@ -120,7 +108,7 @@ class Convert(Step):
     
     def run(self):
         self.gzip_fq1()
-        self.count_sgr_barcode()
+        self.gen_sgr_tenX_dict()
         self.write_fq2()
         self.gzip_fq3()
         self.dump_tenX_sgr_barcode_json()
