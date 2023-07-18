@@ -198,7 +198,7 @@ class Count_vdj(Step):
         final_df_aa = pd.DataFrame()
         final_df_nt = pd.DataFrame()
         
-        def format_files(cdr3_type):
+        def format_files(index, cdr3_type):
             """format clonotypes.csv and clonotypes_nt.csv from productive file."""
             nonlocal final_df_aa, final_df_nt
             
@@ -228,7 +228,7 @@ class Count_vdj(Step):
 
         for index in index_set:
             for cdr3_type in cdr3_types:
-                format_files(cdr3_type)
+                format_files(index, cdr3_type)
 
         final_df_aa.to_csv(self.clonetypes_aa, sep=',', index=False)
         final_df_nt.to_csv(self.clonetypes_nt, sep=',', index=False)
