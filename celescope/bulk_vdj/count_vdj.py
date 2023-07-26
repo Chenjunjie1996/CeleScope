@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import numbers
 from celescope.tools import utils
 from celescope.tools.step import Step, s_common
@@ -232,6 +233,13 @@ class Count_vdj(Step):
 
         final_df_aa.to_csv(self.clonetypes_aa, sep=',', index=False)
         final_df_nt.to_csv(self.clonetypes_nt, sep=',', index=False)
+        
+        mean_diversity = round(np.mean(df_table.Diversity), 2)
+        self.add_metric(
+            name="Mean Diversity",
+            value=mean_diversity,
+            help_info="Mean diversity of all indexes"
+        )
         
         df_table = final_df_aa.groupby('Index').head(100)
         df_table = df_table[["Index", "ClonotypeID", "aaSeqCDR3", "Frequency", "Proportion", "Diversity"]]
