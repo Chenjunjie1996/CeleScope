@@ -1,3 +1,23 @@
+## [2.15.0] - 2026-09-08
+
+### `vdj` and `bulk_vdj`
+- Changed: Expanded "UMIs Mapped Confidently to VJ Gene" criteria in both `vdj` and `bulk_vdj` pipelines to require additional conditions: no stop codons (`*`) in CDR3(JUNCTION) amino acid and locus matches the expected chain set. 
+- Fixed: Fix a bug in `vdj mapping_vdj` when `--species` is `human` or `mouse`.
+
+### General improvements
+- Added: `CLindex_TAG96.fasta` — 96 TAG barcode sequences for Clindex chemistry support in `celescope/data/Clindex/`.
+
+
+## [2.14.0] - 2026-08-27
+- Added: Support for `bulk_rna-V3-384` chemistry.
+- Added: `split_bulk_fastq` utility for splitting paired-end bulk FASTQ files.
+- Added: Background barcode count tracking and output file in `Count_virus` and `Count_fusion`.
+
+
+## [2.13.0] - 2026-08-18
+- Added: Support for customized species in `vdj` and `bulk_vdj` mapping; added `--aux_file` argument for non-human/mouse species.
+- Fixed: Return early for empty wells in `bulk_vdj mapping_vdj` to avoid downstream errors.
+
 ## [2.12.0] - 2026-07-31
 - Added: Celltypist support for cell type annotation in RNA and FFPE workflows.
 - Added: New `space_tag` pipeline for spatial tag analysis.
@@ -688,7 +708,3 @@ Now:
 - VDJ sort `NA` last.
 
 - `match clonetypes` are sorted by barcode_count(Frequency) first, then clonetype_ID.
-
-
-
-

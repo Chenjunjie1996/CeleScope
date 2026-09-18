@@ -55,7 +55,9 @@ Required. A TSV file containing well numbers and sample names of wells.
 
 ![](../images/96-well.png)
 
-**384 well number (16 × 24), only used in `bulk_rna-V1`**
+**384 well number (16 × 24)**, used in `bulk_rna-V1` and `bulk_rna-V3-384`
+
+![](../images/384-well.png)
 
 Example:
 
@@ -75,9 +77,10 @@ Chemistry version. Available choices:
 | `bulk_rna-V1` | C9U12 | 384-well format |
 | `bulk_rna-V2` | L9C9U12 | |
 | `bulk_rna-V3` | C6U16 | |
+| `bulk_rna-V3-384` | C6U16 | 384-well format |
 | `bulk_rna-bulk_vdj_match` | L18C6U16 | Matched with bulk_vdj |
 
-Default is `auto`, which automatically detects the chemistry from the FASTQ files.
+Default is `auto`, which automatically detects the chemistry from the FASTQ files. Please note that `bulk_rna-V3-384` can **not** be auto detected and you need to specify `--chemistry bulk_rna-V3-384` explicitly.
 
 `--thread`
 The recommended number of threads is 16. Using more than 20 threads is generally not recommended, because [the mapping speed of STAR tends to saturate above approximately 20 threads](https://github.com/singleron-RD/CeleScope/issues/197).
@@ -86,7 +89,9 @@ The recommended number of threads is 16. Using more than 20 threads is generally
 Specifies the script type to generate. Available options include `sjm`, which uses [Simple Job Manager](https://github.com/StanfordBioinformatics/SJM), and `shell`, which generates standard shell scripts.
 
 `--split_fastq`
-Split FASTQ file according to well barcodes. Appends UMI to read name with UMI separator `:`.
+Splits R2 FASTQ files by well barcodes and appends the UMI to the read header (separated by :).
+
+Note: Only R2 reads are extracted from the BAM file, and sequences are always output in the forward strand orientation (reverse-complemented if aligned to the reverse strand). R1 reads are omitted because they contain barcode and UMI sequences. To split raw R1 and R2 files, use [split_bulk_fastq](../split_bulk_fastq.md).
 
 `--split_bam`
 Split BAM file according to well barcodes.
