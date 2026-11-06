@@ -1,3 +1,13 @@
+## [2.15.4] - 2026-10-28
+
+### `space`
+- Fixed: `ValueError: Invalid file path or buffer object type: <class 'NoneType'>` in `space starsolo`. Cause: `gzip_matrix` ran `gzip -f` on all files in the matrix directories, re-compressing `barcodes.tsv.gz` into `barcodes.tsv.gz.gz` so that `barcodes.tsv.gz` was no longer found. Fix: use the Python `gzip` module and skip files already ending with `.gz`.
+
+## [2.15.3] - 2026-10-10
+
+### `tag`
+- Changed: `invalid_barcode.tsv` now outputs each `C` segment in its own columns with a `valid` flag indicating whether that segment matched the corresponding barcode FASTA.
+
 ## [2.15.2] - 2026-09-22
 
 ### `tag`

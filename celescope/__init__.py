@@ -1,6 +1,6 @@
 import os
 
-__VERSION__ = "2.15.2"
+__VERSION__ = "2.15.4"
 __version__ = __VERSION__
 
 ASSAY_LIST = [
@@ -63,6 +63,7 @@ HELP_DICT = {
 value of min(14, log2(GenomeLength)/2 - 1). For example, for 1 megaBase genome, this is equal 
 to 9, for 100 kiloBase genome, this is equal to 7.""",
     "chemistry": "`--chemistry auto` can auto-detect most chemistry. You need to explicitly use `--chemistry GEXSCOPE-MicroBead` for legacy chemistry GEXSCOPE-MicroBead as it has no barcode whitelists. `--chemistry customized` is used for user defined combinations that you need to provide `--pattern` and optional `--whitelist` at the same time.",
+    "remove_logo": "Remove logo from report.",
 }
 
 # report metrics help
